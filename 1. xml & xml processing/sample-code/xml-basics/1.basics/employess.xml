@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<employees>
+	<employee>
+		<name id='121'>sumit</name>
+		<address>delhi</address>
+	</employee>
+	
+	<employee>
+		<id>13</id>
+		<name>amit</name>
+		<address>nodia</address>
+	</employee>
+	
+	<employee>
+		<id>13</id>
+		<name>ramit</name>
+		<address>delhi</address>
+	</employee>
+	
+</employees>

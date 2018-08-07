@@ -1,0 +1,18 @@
+<!DOCTYPE orderform SYSTEM "order.dtd">
+<orderform>
+ <customer>
+   <name>Jenny</name>
+  <address>Tokyo</address>
+  <tel>
+   <portable>555-5555-5555</portable>
+  </tel>
+ </customer>
+ <product>
+  <product_name>washing machine</product_name>
+  <num>1</num>
+ </product>
+ <product>
+  <product_name>television</product_name>
+  <num>2</num>
+ </product>
+</orderform>

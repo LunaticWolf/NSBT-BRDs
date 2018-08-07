@@ -1,0 +1,1728 @@
+
+Why we need ORM tools
+--------------------
+there are 3 way to do the things!
+
+1. traditional XML way
+3. Hibernate Annotation Way
+3. JPA Way (Stadard)
+
+
+
+
+
+Why hibernate?
+--------------
+->oo way of thinking
+->lazy and eager loading
+->cascading
+->automatic dirty checking
+->transactional write behind
+->first level caching 
+
+Hibernate annotation
+xxxxxxxxxxxxxxxxxxxxxxxxxx
+
+TOPICS:
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+1. Hello World
+
+2. CRUD application
+
+3. Primary key genearation strategy
+
+4. More annoations
+
+5. Relation mapping
+	Many-to-one mapping
+	one-to-one mapping
+	Many-to-Many mapping
+	
+
+
+6.Implementing Inheritance in Hibernate 
+	Single Table Strategy
+	Table Per Class Strategy
+	Joined Strategy
+
+7. one class to two tables
+
+8. Value type and Embedded Object
+
+9. Saving Collections
+
+10. Introducing HQL and the Query Object
+
+11. Select and Pagination in HQL
+
+12.Understanding Parameter Binding and SQL Injection
+
+13. Hibernate caching
+
+14. Hibernate optimization
+
+13.Named Queries
+
+14. Introduction to Criteria API
+
+15.Understanding Restrictions
+
+16. Cacheing in Hibernate: 
+		First Level and Second Level Cache
+
+17.Using Query Cache in Hibernate
+
+18.Hibernate Batch Processing 
+
+19. Hibernate web programming
+
+20. Solving session in view pattern
+
+21. Hibernate3 Struts2 integration
+
+19. Hibernate caching
+
+20. Hibernate optimization
+
+
+
+
+
+
+
+
+
+
+mvn archetype:create -DarchetypeGroupId=org.apache.maven.archetypes -DgroupId=com.demo -DartifactId=SampleHib
+
+
+mvn dependency:copy-dependencies -DoutputDirectory=${project.build.directory}/lib
+
+
+dependencies:
+---------------
+
+
+	for SQL server:
+	---------------
+	<dependency>
+  		<groupId>com.microsoft.sqlserver</groupId>
+ 		 <artifactId>sqljdbc4</artifactId>
+  		<version>4.0</version>
+	</dependency>
+
+	http://thebrainyprofessionals.com/2013/05/25/setting-up-jpa-with-sql-server/
+
+
+
+
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.3.1.Final</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>4.3.1.Final</version>
+		</dependency>
+		<dependency>
+            		<groupId>mysql</groupId>
+            		<artifactId>mysql-connector-java</artifactId>
+            		<version>5.1.10</version>
+        	</dependency>
+
+
+
+		<!-- EHCache Core APIs -->
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+			<version>2.6.9</version>
+		</dependency>
+		<!-- Hibernate EHCache API -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>4.3.5.Final</version>
+		</dependency>
+		<!-- EHCache uses slf4j for logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+
+
+
+
+
+
+
+1. Hello World
+xxxxxxxxxxxxxxxxxxxxxxx
+
+
+
+step 1: create 
+-------------------------
+
+hibernate.cfg.xml 
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<!-- database connection setting -->
+		<property name="connection.url">jdbc:mysql://localhost:3306/fooraj121</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">root</property>
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+
+		<!-- disable the second level cache -->
+		<property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+		<property name="show_sql">true</property>
+
+		<property name="format_sql">true</property>
+		<property name="hbm2ddl.auto">update</property>
+		<!-- jdbc connection pool build in  -->
+		<property name="connection.pool_size">1</property>
+		<!-- <property name="current_session_context_class">thread</property> -->
+		<mapping class="com.model5.Customer" />
+		
+	</session-factory>
+</hibernate-configuration>
+
+
+
+Step 2:
+
+Define POJO
+-------------------------
+
+
+public class Customer {
+	private int customerId;
+	private String customerName;
+	private String customerAddess;
+}
+
+
+
+
+
+
+
+Step 3:
+
+Annotate it for Entity
+-------------------------
+
+
+@Entity
+public class Customer {
+	@Id
+	private int customerId;
+	private String customerName;
+	private String customerAddess;
+
+
+Step 4:
+
+ test it!
+----------------
+
+		SessionFactory factory=new AnnotationConfiguration().configure().buildSessionFactory();
+		
+		Session session=factory.getCurrentSession();
+		
+		session.beginTransaction();
+		
+		Customer customer=new Customer();
+		customer.setCustomerId(121);
+		customer.setCustomerName("rajiv");
+		customer.setCustomerAddess("noida");
+		session.save(customer);
+		System.out.println("customer saved!");
+		session.getTransaction().commit();
+
+
+
+
+http://stackoverflow.com/questions/8621906/is-buildsessionfactory-deprecated-in-hibernate-4
+
+	public static SessionFactory createSessionFactory() {
+	    Configuration configuration = new Configuration();
+	    configuration.configure();
+	    ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(
+	            configuration.getProperties()).build();
+	  SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+	    return sessionFactory;
+	}
+	
+
+
+
+	Note:
+	----------
+	hbm2ddl.auto
+		create :create new schema every time
+		update : keep database pervious value; if only change in table if 
+				model is changed
+			 it will not drop previous tables
+
+
+
+
+
+
+
+
+
+
+
+
+2. CRUD application
+xxxxxxxxxxxxxxxxxxxxxxx
+
+
+CRUD
+xxxxxxxxxxxxxx
+
+	Retrive an particular record
+	---------------------------------
+		Session session=factory.getCurrentSession();
+		
+		session.beginTransaction();
+		
+		Customer customer=(Customer) session.get(Customer.class, 121);
+		System.out.println(customer);
+		session.getTransaction().commit();
+
+
+	{	User user=(User) session.get(User.class,name);
+Mehul COde	{	String uName=user.getUserId();
+	{	if(uName.equals(name) && uPass.eqauls(password))
+	
+	Retrive all record
+	---------------------------------
+		Session session=factory.getCurrentSession();
+		
+		session.beginTransaction();
+		List<Customer>cList=session.createQuery("from Customer").list();
+		
+		for(Customer customer:cList)
+			System.out.println(customer);
+		session.getTransaction().commit();
+
+
+
+	Update
+	---------------------------------
+
+		Session session=factory.getCurrentSession();
+		
+		session.beginTransaction();
+		
+		Customer customer=(Customer) session.get(Customer.class, 121);
+		customer.setCustomerAddess("banglore");
+		session.save(customer);
+		session.getTransaction().commit();
+
+	Delete
+	---------------------------------
+		
+		Session session=factory.getCurrentSession();
+		
+		session.beginTransaction();
+		
+		Customer customer=(Customer) session.get(Customer.class, 121);
+		session.delete(customer);
+		session.getTransaction().commit();
+
+
+
+
+
+
+
+Hibernate conf with connection pooling
+------------------------------------
+
+
+	configure connection pooling with tomcat!
+
+	Step 1;
+
+	mapping in context.xml
+
+	<Resource
+	name="jdbc/test"
+	auth="Container"
+	driverClassName="com.mysql.jdbc.Driver"
+	type="javax.sql.DataSource"
+	url="jdbc:mysql://localhost:3306/exp121"
+	username="root"
+	password="root" >
+	</Resource>
+
+
+
+	Step 2:
+
+
+	mapping in web.xml
+	----------------------
+	<resource-ref>
+  	  <description>Test Database</description>
+   	 <res-ref-name>jdbc/test</res-ref-name>
+   	 <res-type>javax.sql.DataSource</res-type>
+   	 <res-auth>Container</res-auth>
+	  </resource-ref>
+
+	Step 3:
+	-------
+
+
+	@Resource(name="jdbc/test")
+	private DataSource ds;
+	private Connection conn;
+
+
+	conn = ds.getConnection();
+
+	then use connection object as usual;
+
+
+
+
+
+
+
+
+
+
+
+<session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.connection.datasource">java:comp/env/jdbc/test</property>
+        <property name="hibernate.current_session_context_class">thread</property>
+         
+        <!-- Mapping with model class containing annotations -->
+    </session-factory>
+
+
+
+Different between session.get() and session.load()
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+	both functions are use to retrieve an object 
+	with different mechanism
+
+	session.load()
+	--------------------
+		It will always return a proxy (Hibernate term) 
+		without hitting the database. 
+
+		proxy object look like a temporary fake object.
+    
+		If no row found , it will throws an ObjectNotFoundException.
+
+
+	session.get()
+	-----------------
+
+    		It always hit the database and return the real object,
+		an object that represent the database row, not proxy.
+
+    		If no row found , it return null.
+
+
+	http://stackoverflow.com/questions/8044963/hibernate-3-6-session-get-vs-session-load
+	
+
+
+
+
+3. Primary key genearation strategy
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+
+	@GeneratedValue(strategy=
+				AUTO (ny default :let hibernate make decision)
+
+				Identity (Hibernate use identity column)
+
+				Sequence
+
+				Table
+
+
+
+	Example table generation strategy
+	------------------------------------------
+
+
+	@TableGenerator	(name="my_gen",table="customerpktable",pkColumnName="customerkey",
+			pkColumnValue="customervalue",allocationSize=1)
+
+	@GeneratedValue(strategy=GenerationType.TABLE,generator="my_gen")
+
+
+
+composite uniqe key
+====================
+@Table( name = "MYTABLE",
+        uniqueConstraints = { @UniqueConstraint( columnNames = { "NAME", "VERSION" } ) } )
+
+
+
+Compound Primary Keys 
+=======================
+with @Id
+=====================
+	=> Consider that business requirment is that we need to
+	 represent customer primary key as a combination of 
+	customerId and customerRegistractionId?
+
+
+Steps:
+
+1. Create an POJO annotated with @Embeddable
+ ( it must implements Serilizable interface and must have default ctr)
+
+
+@Embeddable
+public class CustomerKey implements Serializable{
+	private static final long serialVersionUID = -4336329019606358832L;
+	private int customerId;
+	private String customerRegistrationId;
+
+
+
+2. Use it in target class
+
+@Entity
+public class Customer {
+	@Id
+	private CustomerKey customerKey;
+	private String customerName;
+	private String customerAddess;
+
+
+
+Compound Primary Keys 
+===================================
+@IdClass
+====================================
+The next most natural approach is the use of the @EmbeddedId tag. Here, the primary
+key class cannot be used in other tables since it is not an @Embeddable entity, but it does
+allow us to treat the key as a single attribute of the Account class
+
+
+
+Compound Primary Keys 
+===================================
+@EmbeddedId
+====================================
+
+
+
+4. More annoations
+==================================
+
+
+@Entity
+public class User {
+	@Id
+	private int userId;
+	private String userName;
+
+
+What if table name and field name is something else?
+----------------------------------------------------
+
+What is the difference bw applying name using @Table and @Entity ?
+--------------------------------------------------------------
+
+@Entity(name="customer_entity")
+@Table(name="customer_table")
+public class Customer {
+	@Id
+	@Column(name="customer_Id")
+	private int customerId;
+	@Column(name="customer_Name")
+	private String customerName;
+	@Column(name="customer_Addess")
+	private String customerAddess;
+
+
+
+Note: annotations can be applied to getters
+
+
+
+
+
+Add some more fileds to User bean
+--------------------------------------
+private Date joinedDate;  //java.util
+private String address;
+private String description;
+
+
+Check and run !
+
+
+@Basic ?
+	used to add some properties to add to that field.
+	You can work apply without it.
+
+@Transient?
+	You can not store static and transient data.
+
+
+
+
+
+
+What if i want only to store date part not time?
+-----------------------------------------
+
+use @Tomporal
+
+	@Temporal(TemporalType.DATE)
+	private Date joinedDate;  //java.util
+
+
+@Lob
+	private String description;
+
+	blob/clob
+
+
+
+how to store image and video in database best practices :)
+
+
+
+
+@Entity(name="customer_entity")
+@Table(name="customer_table")
+public class Customer {
+	@Id
+	@Column(name="customer_Id")
+	private int customerId;
+	@Column(name="customer_Name")
+	private String customerName;
+	@Column(name="customer_Addess")
+	private String customerAddess;
+	@Temporal(TemporalType.DATE)
+	private Date customerDob;
+	@Transient
+	private String customerPassword;
+
+
+
+
+
+
+
+Component Mapping
+
+==============================
+One class to two tables
+=================================
+
+	=> Lets say Customer and other other table CustomerDetails
+
+	=> We have to decide what fields should go in each tables?
+
+@Entity
+@Table(name="customer")
+@SecondaryTable(name="customerDetails")
+public class Customer {
+
+	@Id
+	private int customerId;
+	private String customerName;
+
+	//must be in customerDetails table
+	@Column(table="customerDetails")
+	private String customerAddess;
+	
+	@Column(table="customerDetails")
+	private int customerCreditScore;
+	
+	@Column(table="customerDetails")
+	private int customerRewardPoints;
+
+
+==============================
+One class to two tables
+==============================
+
+
+Many-To-One Mapping
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Relationship mapping:
+
+in ER diagarm:
+
+one to many
+one to one 
+
+many to one 
+
+many to many
+
+
+
+
+Consider:-
+
+	1		N
+
+reverse owner		owner of relationship
+
+Department -----------<>------ Employee
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@Entity
+public class Employee {
+	@Id
+	private int empId;
+	private String empName;
+
+	@ManyToOne
+	private Department department;
+
+
+
+@Entity
+public class Department {
+	@Id
+	private int deptId;
+	private String detpName;
+
+	@OneToMany
+	private Collection<Employee>employees=new ArrayList<Employee>();
+
+
+
+
+
+
+
+
+
+
+
+
+@Entity
+public class Employee {
+
+	@Id
+	@GeneratedValue
+	private int empId;
+	private String empName;
+
+	@ManyToOne
+	private Department department;
+
+
+
+@Entity
+public class Department {
+	@Id
+	@GeneratedValue
+	private int deptId;
+	private String detpName;
+	
+	@OneToMany(mappedBy="department")
+	private Collection<Employee>employees=new ArrayList<Employee>();
+	
+
+
+
+
+
+
+one-to-one mapping
+xxxxxxxxxxxxxxxxxxxxxxxxxx
+
+	In a one-to-one mapping the owner can be
+	 either the source entity or the target entity.
+
+
+		1		1
+	Employee<>----------Parking
+
+
+
+
+
+	public class Parking {
+	
+		private int partingId;
+		private String parkingLocation;
+
+	
+		private Employee employee;
+
+
+
+	
+	public class Employee {
+	
+		private int empId;
+		private String empName;
+
+	
+		private Parking parking;
+
+
+
+
+
+
+Now apply annotations
+---------------------------------
+
+
+
+@Entity
+public class Parking {
+	@Id
+	@GeneratedValue
+	private int partingId;
+	private String parkingLocation;
+
+	@OneToOne(mappedBy = "parking")
+	private Employee employee;
+
+
+
+@Entity
+public class Employee {
+	@Id
+	@GeneratedValue
+	private int empId;
+	private String empName;
+
+	@OneToOne
+	private Parking parking;
+
+
+
+List<Parking> list=session.createQuery("from Parking p join fetch p.employee Employee").list();
+	
+	Criteria criteria = session.createCriteria(Parking.class);
+			criteria.setFetchMode("employee",FetchMode.EAGER);
+					
+@BatchSize(size=5) on emp
+http://www.javamakeuse.com/2015/03/tutorial-hibernate-4-batch-fetching.html
+
+Many-to-Many mapping
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+	   N		      N
+	Employee----<>----- Project
+
+
+
+
+	Create POJO
+	-------------
+
+	public class Employee {
+	
+		private int empId;
+		private String empName;
+	
+		private Collection<Project> projects = new ArrayList<Project>();
+
+
+
+
+
+	public class Project {
+	
+		private int projectId;
+		private String projectName;
+
+		private List<Employee> employees = new ArrayList<Employee>();
+
+
+
+
+
+
+
+
+
+	Apply annotations
+	----------------
+	@Entity
+	public class Employee {
+		@Id
+		@GeneratedValue
+		private int empId;
+		private String empName;
+
+		@ManyToMany
+		private Collection<Project> projects = new ArrayList<Project>();
+
+
+
+
+	@Entity
+	public class Project {
+		@Id
+		@GeneratedValue
+		private int projectId;
+		private String projectName;
+
+		@ManyToMany(mappedBy="projects")
+		private Collection<Employee> employees = new ArrayList<Employee>();
+
+
+
+
+
+
+
+
+Inheritance in Hibernate 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+DB do not hv notion of Inhertance
+
+
+Consider:
+
+		Account   id, name, balance
+		  |
+	-----------------------
+	|		      |
+
+     SavingAccount        CurrentAccount
+	intrestRate          overdraft
+
+
+
+	public class Account{
+		private int accountId;
+		private String accountHolderName;
+		private double balance;
+
+		//
+
+	}
+
+
+	public class SavingAccount extends Account{
+		private double intrestRate;
+	
+	}
+
+
+	public class CurrentAccount extends Account{
+		private double overdraft;
+	}
+
+
+
+
+
+	Now mapping:Table per class hierarchy 
+	-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	==> Only one table
+	==>we need discriminator column
+
+
+
+
+
+
+
+	@Entity
+	@Table(name = "Account")
+	@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+	@DiscriminatorColumn(name="accountType",discriminatorType=DiscriminatorType.STRING)
+
+	public class Account {
+		@Id
+		@GeneratedValue
+		private int accountId;
+		private String accountHolderName;
+		private double balance;
+	
+
+
+
+	@Entity
+	@Table(name="Account")
+	@DiscriminatorValue("C")
+	public class CurrentAccount extends Account {
+
+		private double overdraft;
+
+
+
+
+	@Entity
+	@Table(name="Account")
+	@DiscriminatorValue("S")
+	public class SavingAccount extends Account {
+
+		private double intrestRate;
+
+
+
+
+
+
+
+	Table per class 
+	xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+	==>Separate table mapped to all classes in
+    		the hierarchy
+	==> three table is created Account, SavingAccount, CurrentAccount
+
+
+
+
+	Efficient, no join is involed good
+
+	Do not follow normalization X
+
+	public class Account{
+		private int accountId;
+		private String accountHolderName;
+		private double balance;
+
+	}
+
+
+	public class SavingAccount extends Account{
+		private double intrestRate;
+	
+	}
+
+
+	public class CurrentAccount extends Account{
+		private double overdraft
+	}
+
+
+	
+	Now Mapping
+	--------------------
+
+	 
+	@Entity
+	@Table(name = "Account")
+	@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+
+	public class Account{
+
+		@Id
+		@GeneratedValue(strategy = GenerationType.TABLE)
+		private int accountId;
+		private String accountHolderName;
+		private double balance;
+
+	}
+
+
+	@Entity
+	@Table(name="SavingAccount")
+	public class SavingAccount extends Account{
+		private double intrestRate;
+	
+	}
+
+	@Entity
+	@Table(name="CurrentAccount")
+	public class CurrentAccount extends Account{
+		private double overdraft;
+	}
+
+
+	acocunt a=new Account();
+
+
+
+
+
+
+	Table per concrete class (Try urself)	
+	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+	==>here Account class is an abstract class. 
+
+	==> So no need to map it to database, the values
+		 mapped by sub classes ie SavingAccount and CurrentAccount 
+
+	==>Two separate table is going to be created for
+	 SavingAccount and CurrentAccount
+
+
+
+	
+
+
+	More on life cycle
+
+	Transient, Persistent and Detached Objects
+	----------------------------------------------
+
+
+	Consider
+	--------
+
+	@Entity
+	public class Customer {
+	@Id
+	@GeneratedValue
+	private int id;
+	private String name;
+	private String address;
+
+
+
+	Transient
+	-----------
+	==>not related to hibernate only in java space not in db space
+
+	==>Transient objects do not have association with the databases and 			
+		session objects
+
+
+		Customer c=new Customer();
+		
+		c.setName("raja");
+		c.setAddress("Delhi");
+
+
+
+	Persistent 
+	------------
+	Hibernate care about it
+
+	Integer id=(Integer) session.save(c);
+
+	Now u can change state of Customer and hibernate keep track of it!
+	
+	only one update is fired.
+
+	
+		c.setAddress("new delhi");
+		c.setAddress("east delhi");
+		c.setAddress("noida");
+		
+
+
+	Detached 
+	--------
+	==> in java space and in db space
+	==> The detached object have corresponding entries in the database
+
+	session.close();  
+
+	
+
+	How State of Object  Changes in Hibernate
+	------------------------------------------
+
+	cases:
+	--------
+	While creating new Entity
+	-----------------------------
+
+	new()
+
+	|
+
+	Transient  --> 	Persistent 	-->	 Detached
+		session.save()	   session.close();
+
+
+
+	When Reading an Entity Object
+	-----------------------------
+
+
+	get()
+	  |
+
+	Persistent 	-->	 Detached
+	          session.close();
+
+
+	When Delete an Entity Object 
+	---------------------------------
+
+
+	Transient <---  Persistent  ---> Detached
+
+		s.delete()	s.close();
+
+
+
+
+
+
+	Transient <---  Persistent  ---> Detached
+
+		    |<-------------->|
+			session
+
+
+
+	==>When object in the session area then it is in Persistent State.
+
+ 	==>When object before the session area then it is in Transient 		
+		State. 
+
+ 	==>When object after the session area then it is in Detached State.
+	
+
+
+
+	Detached to Persistent State
+	----------------------------
+
+	Integer id=(Integer) session.save(c);
+		session.close();
+		
+		// time gap
+		
+		
+		
+		session = fac.openSession();
+		  session.beginTransaction();  
+		    
+		  c.setAddress("noida");// here user in detached state
+		  session.update(c);
+		  
+		session.getTransaction().commit();
+
+
+
+
+
+
+
+one class to two tables
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+lets i want to make two table from one class customer and
+want to have reference integrity working for me!
+
+
+Customer
+
+CustomerDetails
+
+
+
+
+
+Consider Customer  POJO We want that some 
+attribute of  Customer should store in sepeate table
+
+
+public class Customer {
+	//let id and name goes to customer table
+	private int customerId;
+	private String customerName;
+	
+	//let below goes with CustomerDetails
+
+	private String customerAddress;
+	private int creditScore;
+	private int rewardPoints;
+
+
+
+
+Steps:
+------------
+
+1. Decide filed to store in seperate table.
+
+
+@Entity
+@Table(name="Customer")
+@SecondaryTable(name="CustomerDetails")
+
+public class Customer {
+	//let id and name goes to customer table
+	private int customerId;
+	private String customerName;
+	
+	//let below goes with CustomerDetails
+	private String customerAddress;
+	private int creditScore;
+	private int rewardPoints;
+
+
+2. Now mention @Column(table="CustomerDetails") on the attribute that has to
+	be store in CustomerDetails table.
+	
+
+
+
+
+
+
+
+
+
+
+
+
+PK and FK in 
+
+
+Value type and Embedded Object
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+	com.example2
+
+Entiy 		:meaning of its own
+
+value object 	:dont have meaning of its own
+	
+
+@Embeddable 
+		for value object it is not is entity object. 
+		Value object means does not have real meaning for self individually.
+
+
+Addess has to be associated with User otherwise it have no sense.
+
+
+
+
+public class User {
+	private int userId;
+	private String userName;
+
+
+
+public class Address {
+
+	private String city;
+	private String country;
+
+
+steps;
+
+	1. Apply @Embeddable on value object
+
+
+	 @Embeddable
+	public class Address {
+
+	private String city;
+	private String country;
+
+
+	2.Create ref of Address into User and declare it @Embedded
+
+	
+	public class User {
+			private int userId;
+			private String userName;	
+
+			@Embedded
+			private Addess address;
+
+
+	
+
+
+
+
+
+
+
+Saving Collections
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+
+ What if i need to store more then one address for User?
+--------------------------------------------------------------
+
+
+	class User{
+    		-----
+   		 private int userId;
+    		-----
+   		 private Address address1;
+    		private Address address2;
+    		-----
+    		private Address addressN;
+    		-----
+		}
+
+
+
+
+	approach:
+	----------------------
+
+	Set<Address>addresses=new HashSet();
+	
+
+	class User{
+    		
+
+		private int userId;
+		private String userName;
+
+		@ElementCollection
+    			Set<Address>addresses=new HashSet();
+    		
+		}
+
+
+
+	@Embeddable 
+	class Address{
+	
+	private String city;
+	private String country;
+
+
+	}
+
+
+
+	Now save it
+	-----------------
+	user.getLisOfAddresses().add(address1);
+        user.getLisOfAddresses().add(address2);
+
+
+	Save User
+
+	two table created	: one for user
+	another with the name	: user_addresses hibernate decide for you.
+
+	Note: 
+	If u want to hv a custom name
+
+	@JoinTable(name="User_address") 
+
+	Pk of join table is by default is 
+	User_userId (name of the table + pk of User)
+
+	How to override it?
+
+	@JoinTable(name="User_address", joinColumns=@Joincolumn	(name="User_id") )
+
+
+
+
+
+
+
+
+Set<Address>addresses=new HashSet();
+-----------------------------------
+	do not support index!
+
+	then what?
+
+	private Collection<Address> addresses = new ArrayList<Address>();
+	
+
+	And use annotation @CollectionId over Collection.
+
+	@GenericGenerator(name="hilo-gen", strategy="hilo')
+	@CollectionId (columns={@Column(name="address_id")}, generator="hilo-gen", type=@Type(type="long"))
+
+
+
+
+
+
+Introducing HQL and the Query Object
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+	==> HQL is OO version of SQL
+	
+	==>  HQL uses class name instead of table name, 
+		and property names instead of column name
+
+
+	==> HQL fully supports polymorphic queries
+  
+
+	hibernate queries
+ 	-----------------
+	
+   	 # Hibernate Query Language (HQL)
+
+    	# Criteria API (JPA 2.x)
+
+    	# Native SQL queries
+
+
+
+	HQL Syntax
+	xxxxxxxxxxxxxxx
+
+
+	HQL Queries elements:
+	----------------------
+		Clauses, Aggregate functions, Subqueries
+
+	Clauses in the HQL are:
+	-------------------------
+		from, select, where, order by, group by
+
+	Aggregate functions are:
+	----------------------------
+
+   		avg(...), sum(...), min(...), max(...) , count(*)
+  	 	 count(...), count(distinct ...), count(all...)
+		
+
+
+
+	hello World HQL
+	-----------------
+
+	class Customer{
+		private int id;
+		private String name;
+		private String address;
+		
+	}
+
+
+	String q = "FROM Customer c"; 
+ 
+  	Query query = session.createQuery(q);  
+
+  	query.setFirstResult(1);//set first result start value  
+  	query.setMaxResults(5);//number of result to be display  
+    
+  	List<Customer> cList = query.list();  
+
+ 	 for(Customer temp : cList)  
+  	{  
+  		 System.out.println(temp);  
+  	}  
+
+
+
+
+
+
+
+
+Parameter Binding
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+ Ex:
+
+    String q = "from Customer c where c.address= ?";  
+
+    Query query = session.createQuery(q);  
+
+    query.setString(0, "noida");  
+    
+    List result = query.list(); 
+
+
+
+	Ex:
+
+	Customer  c= new Customer ();  
+
+	c.setName("rajesh"); 
+ 
+	String hql = "from Customer c where c.name= :name"; 
+ 
+	Query query = session.createQuery(hql); 
+ 
+	query .setString("name","raja");  
+
+	List result = query.list();
+
+ 
+
+Named Quaries and native Quaries
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+	==> Give unique name to the Queries that work for entire application.
+ 
+	==>The application can use the query by using the name of the query
+
+
+
+Ex:
+
+
+	@NamedQueries({@NamedQuery( name = "findCustomer.byId",query = "from Customer c where c.id = :id" )}) 
+	
+	@NamedNativeQueries({  
+ 		@NamedNativeQuery(  
+ 		name = "findCustomer.byAddress",  query = "select * from Customer c where c.address = :address"  , 		resultClass = Customer.class  
+ 		)  
+		}) 
+	
+	@Entity
+	public class Customer {
+		@Id
+		@GeneratedValue
+		private int id;
+
+
+
+
+	now Use Query:
+	--------------------
+
+		Query query = session.getNamedQuery("findCustomer.byId").setInteger("id", 3);  
+	    
+		  List<Customer> cList = query.list();  
+		  for(Customer temp : cList)  
+		  {  
+		   System.out.println(temp);  
+		  }  
+
+
+
+
+
+
+
+
+
+Criteria API in Hibernate
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+	3 way to pulling data from the database in the Hibernate.
+	-------------------------------------------------------------
+    	1. Using session methods(get() and load() methods)  
+		-limited control to accessing data
+
+	2. Using HQL - Slightly more control using where clause
+
+    	3. Using Criteria API 
+		The criteria API is an alternative of HQL queries. 
+		It is more powerful and flexible for writing tricky
+		 criteria functions and dynamic queries
+
+
+
+	Criteria hello world
+	----------------------------
+
+    	Criteria criteria = session.createCriteria(Customer.class);  
+	      
+	criteria.add(Restrictions.eq("name", "amit"));  
+		      
+	criteria.add(Restrictions.le("id", 5));  
+
+	    
+	List<Customer> cList = criteria.list();  
+
+
+	Note:
+	------
+
+
+	Restrictions.ge
+
+	Restrictions.le
+
+	Restrictions.ne
+
+	Restrictions.in
+	------------------------
+		Criteria criteria = session.createCriteria(Customer.class); 
+ 
+		criteria.add(Restrictions.in("id", new Integer[]{3,5,7})); 
+ 
+		List list = criteria.list();
+
+	Restrictions.like
+	------------------
+
+		 Criteria criteria = session.createCriteria(Customer.class);  
+   		 criteria.add(Restrictions.like("name", "%raja%"));  
+    		 List list = criteria.list(); 
+
+	Restrictions.isNull
+	-----------------------
+ 	    Criteria criteria = session.createCriteria(Customer.class);  
+    
+	    criteria.add(Restrictions.isNull("address"));  
+    
+	    List list = criteria.list(); 
+
+	Restrictions.isNotNull
+
+
+	Restriction.between
+	--------------------
+	    Criteria criteria = session.createCriteria(Customer.class);  
+
+	    criteria.add(Restrictions.between("id", 3, 7));  
+
+	     List list = criteria.list(); 
+
+
+	Restriction.allEq
+	--------------------
+	SELECT * FROM user WHERE userName = +userName AND userPassword = +userPassword;  
+
+
+	Map map = new HashMap();    
+	map.put("username", username);    
+	map.put("userPassword", userPassword);    
+	Criteria criteria = session.createCriteria(User.class);  
+	criteria.add(Restrictions.allEq(map));  
+	List list = criteria.uniqueResult();
+
+
+http://learningviacode.blogspot.in/2012/02/hibernate-object-life-cycle.html
+ 
+

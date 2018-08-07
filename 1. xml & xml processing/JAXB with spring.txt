@@ -1,0 +1,169 @@
+JAXB with spring
+---------------
+
+Step 1: maven dependencies:
+
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+			<version>3.0.0.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>3.0.0.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.0.0.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.2.8-b01</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.2-promoted-b65</version>
+		</dependency>
+
+
+
+
+Step 2:
+-----
+POJO annotated with JAXB annotations
+
+
+com.demo.jaxb
+
+
+
+
+
+@XmlType(propOrder={"title","author"})
+public class Book 
+{
+	private double price;
+	private String title;
+	private String author;
+	
+	@XmlAttribute(name="price")
+	public double getPrice() {
+		return price;
+	}
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	@XmlElement(name="Title")
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	@XmlElement(name="Author")
+	public String getAuthor() {
+		return author;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+}
+
+
+
+@XmlRootElement(name="Catalog")
+public class Catalog
+{
+	private int id;
+		
+	private List<Book> books = new ArrayList<Book>();
+	
+	@XmlAttribute(name="id")
+	public int getId() {
+		return id;
+	}
+	
+	public void addBook(Book book)
+	{
+		books.add(book);
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	@XmlElement(name="Book",type=Book.class)
+	public List<Book> getBooks() {
+		return books;
+	}
+	public void setBooks(List<Book> books) {
+		this.books = books;
+	}
+}
+
+
+
+
+step 3: spring configuration file:
+-----------------------------
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+		http://www.springframework.org/schema/oxm
+     	http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd">
+
+	<oxm:jaxb2-marshaller id="jaxbMarshallerBean">
+		<oxm:class-to-be-bound name="com.demo.jaxb.Catalog" />
+		<oxm:class-to-be-bound name="com.demo.jaxb.Book" />
+	</oxm:jaxb2-marshaller>
+
+</beans>
+
+
+
+
+
+step 4: client:
+-----------------
+
+
+import javax.xml.transform.stream.StreamResult;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.oxm.Marshaller;
+import org.springframework.oxm.XmlMappingException;
+public class Main {
+
+	public static void main(String[] args) throws XmlMappingException, IOException {
+		ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+		Marshaller marshaller = (Marshaller)context.getBean("jaxbMarshallerBean");
+		
+		Catalog catalog = new Catalog();
+		catalog.setId(101);
+		
+		Book book1 = new Book();
+		book1.setTitle("XYZ");
+		book1.setPrice(2345);
+		book1.setAuthor("ABC");
+		catalog.addBook(book1);
+		
+		Book book2 = new Book();
+		book2.setTitle("XYZ2");
+		book2.setPrice(100);
+		book2.setAuthor("CDE");
+		catalog.addBook(book2);
+		
+		marshaller.marshal(catalog, new StreamResult(new FileWriter("c:\\raj\\catalog.xml")));
+		System.out.println("Created Sucessfully");
+	}
+
+}
+

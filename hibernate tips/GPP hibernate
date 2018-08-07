@@ -1,0 +1,21 @@
+Hibernate GPP and performance
+------------------------------
+
+1. SQL Optimization
+------------------------
+	“from User user where user.name = ‘John’” vs “from User user where user.name =?” 
+	=> perfer binding parameter, as second one will be cached by the Database to fulfill the performance improvement
+
+	=> use  hibernate.jdbc.batch_size
+	=> witching off the SQL output via setting property hibernate.show_sql
+	=> performance tuning ofDatabase :SQL clauses tuning, reasonable indexes, 
+	delicate table structures, data partitions etc.	
+
+2. Session Management
+----------------------
+	=> for session management in hibernate used to set ThreadLocal
+
+3.Data Caching
+-------------
+	=> set hibernate.cache.user_query_cache = true
+

@@ -1,0 +1,31 @@
+LAB ASSIGNMENTS
+------------------------
+Spring JPA
+------------------------
+In lab Spring jdbc you have created book application with persistance layer using spring-jdbc, 
+now we require to replace persistance layer with JPA. 
+
+Note that service layer should remain uneffected by the change.
+
+
+
+@Service
+public interface BookService implements  BookService {
+
+	@Autowire
+	private BookDao dao;
+	
+	public List<Book> getAllBooks(){
+	}
+	public Book addBook(Book book){}
+
+	public void deleteBook(int id){
+	// if somebody delete book we need to log information in log file using AOP
+	}
+	public void updateBook(int id, Book book){}
+	public Book getBookById(int id){}
+}
+
+
+1. Implement crud method using jdbc, inject EntityManager in persistane layer, using xml and java configuration
+2. Use Spring Data to implement dao layer and integrate with service layer

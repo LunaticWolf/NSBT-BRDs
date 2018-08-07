@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Orders Count="2">
+  <Order ID="0000000001">
+    <Type>N</Type>
+    <Date>Jan 1, 2004, 14:29</Date>
+    <Customer>
+      <SernaDirect>
+        <SubscriptionType>B</SubscriptionType>
+        <SubscriptionLength>12</SubscriptionLength>
+      </SernaDirect>
+      <Address>
+        <Address1>123 Somewhere Ave.</Address1>
+        <Address2/>
+        <City>Some Town</City>
+        <State>TA</State>
+        <Zip>000000000</Zip>
+      </Address>
+      <CreditCard>
+        <Number>4111111111111111</Number>
+        <CardHolderName>John Q Public</CardHolderName>
+        <Expiry>11/09</Expiry>
+      </CreditCard>
+      <Phone>5555555555</Phone>
+      <Name>John Public</Name>
+      <Email>jpublic@someprovider.com</Email>
+    </Customer>
+    <Number>x582n9</Number>
+    <Products Count="1">
+      <Product>
+        <Model>X9</Model>
+        <Price>129.95</Price>
+        <ID>x9000059</ID>
+      </Product>
+    </Products>
+  </Order>
+  <Order ID="0000000002">
+    <Type>N</Type>
+    <Date>Jan 1, 2004, 16:00</Date>
+    <Customer>
+      <SernaDirect>
+        <SubscriptionType>D</SubscriptionType>
+        <SubscriptionLength>12</SubscriptionLength>
+      </SernaDirect>
+      <Address>
+        <Address1>89 Subscriber's Street</Address1>
+        <Address2>Box 882</Address2>
+        <City>Smallville</City>
+        <State>XQ</State>
+        <Zip>000000000</Zip>
+      </Address>
+      <CreditCard>
+        <Number>4512451245124512</Number>
+        <CardHolderName>Helen P Someperson</CardHolderName>
+        <Expiry>01/08</Expiry>
+      </CreditCard>
+      <Phone>5554443333</Phone>
+      <Name>Helen Someperson</Name>
+      <Email>helens@isp.net</Email>
+    </Customer>
+    <Number>a98f78d</Number>
+    <Products Count="1">
+      <Product>
+        <Model>Y9</Model>
+        <Price>229.95</Price>
+        <ID>y9000065</ID>
+      </Product>
+    </Products>
+  </Order>
+</Orders>

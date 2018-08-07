@@ -1,0 +1,7 @@
+discussion on xml processing
+--------------------------
+http://howtodoinjava.com/2013/07/30/jaxb-exmaple-marshalling-and-unmarshalling-list-or-set-of-objects/
+
+http://www.mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
+
+http://www.mkyong.com/java/how-to-read-xml-file-in-java-sax-parser/

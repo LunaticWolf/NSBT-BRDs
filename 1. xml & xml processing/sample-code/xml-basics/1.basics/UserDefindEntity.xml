@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hi[
+	<!ENTITY city "new delhi">
+	]>
+	
+	
+	<hi>
+		
+		<city>&city;</city>
+	</hi>
+	
